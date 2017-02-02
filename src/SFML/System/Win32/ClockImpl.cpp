@@ -41,12 +41,6 @@ namespace
         QueryPerformanceFrequency(&frequency);
         return frequency;
     }
-
-    bool isWindowsXpOrOlder()
-    {
-        // Windows XP was the last 5.x version of Windows
-        return static_cast<DWORD>(LOBYTE(LOWORD(GetVersion()))) < 6;
-    }
 }
 
 namespace sf
@@ -60,24 +54,10 @@ Time ClockImpl::getCurrentTime()
     // (it is constant across the program lifetime)
     static LARGE_INTEGER frequency = getFrequency();
 
-    // Detect if we are on Windows XP or older
-    static bool oldWindows = isWindowsXpOrOlder();
-
     LARGE_INTEGER time;
 
-    if (oldWindows)
-    {
-        // Acquire a lock (CRITICAL_SECTION) to prevent travelling back in time
-        Lock lock(oldWindowsMutex);
-
-        // Get the current time
-        QueryPerformanceCounter(&time);
-    }
-    else
-    {
-        // Get the current time
-        QueryPerformanceCounter(&time);
-    }
+    // Get the current time
+    QueryPerformanceCounter(&time);
 
     // Return the current time as microseconds
     return sf::microseconds(1000000 * time.QuadPart / frequency.QuadPart);

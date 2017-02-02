@@ -28,7 +28,13 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Glsl.hpp>
 #include <algorithm>
+#include <iterator>
 
+#ifdef _MSC_VER
+#define SUPPRESS_MSVC_ITERATOR_WARNING ::stdext::make_unchecked_array_iterator
+#else
+#define SUPPRESS_MSVC_ITERATOR_WARNING
+#endif
 
 namespace sf
 {
@@ -59,7 +65,7 @@ namespace priv
     ////////////////////////////////////////////////////////////
     void copyMatrix(const float* source, std::size_t elements, float* dest)
     {
-        std::copy(source, source + elements, dest);
+        std::copy(source, source + elements, SUPPRESS_MSVC_ITERATOR_WARNING(dest));
     }
 
 
